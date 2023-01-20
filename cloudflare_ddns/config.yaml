@@ -1,0 +1,12 @@
+name: "Cloudflare Dynamic DNS"
+description: "Update dynamic DNS record hosted with Cloudflare"
+version: "1.0.0"
+slug: "cloudflare_ddns"
+init: false
+arch:
+    - aarch64
+    - amd64
+    - armhf
+    - armv7
+    - i386
+
