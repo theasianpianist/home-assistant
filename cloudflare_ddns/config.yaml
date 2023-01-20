@@ -1,6 +1,6 @@
 name: "Cloudflare Dynamic DNS"
 description: "Update dynamic DNS record hosted with Cloudflare"
-version: 0.0.1
+version: 1.0.0
 slug: "cloudflare_ddns"
 init: false
 arch:
@@ -14,12 +14,9 @@ options:
         - null
     token: null
     zone_id: null
-    dns_id: null
-    seconds: 300
+    update_interval: 300
 schema:
-    domains:
-        - str
+    domains: []
     token: str
     zone_id: str
-    dns_id: str
-    seconds: int
+    update_interval: int
