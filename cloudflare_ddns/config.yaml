@@ -16,7 +16,8 @@ options:
     zone_id: null
     update_interval: 300
 schema:
-    domains: []
+    domains:
+        - str
     token: str
     zone_id: str
     update_interval: int
