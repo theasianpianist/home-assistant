@@ -8,4 +8,13 @@ arch:
     - armhf
     - armv7
     - i386
-
+options:
+    domains:
+        - null
+    token: null
+    seconds: 300
+schema:
+    domains:
+        - str
+    token: str
+    seconds: int
