@@ -9,15 +9,9 @@ arch:
     - armhf
     - armv7
     - i386
-options:
-    domains:
-        - null
-    token: null
-    zone_id: null
-    update_interval: 300
 schema:
     domains:
-        - str
+      - str
     token: str
     zone_id: str
     update_interval: int
