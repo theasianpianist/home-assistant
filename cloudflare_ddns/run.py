@@ -19,7 +19,6 @@ class DNSUpdater:
         self.public_ip = None
         self.ip_changed = False
         self.update_domains = []
-        self.conn = http.client.HTTPSConnection("api.cloudflare.com")
         self.payload_template = """
                                 {{
                                     "type": "A", 
@@ -118,8 +117,11 @@ class DNSUpdater:
         while True:
             self.check_public_ip()
             if self.ip_changed:
+                self.conn = http.client.HTTPSConnection("api.cloudflare.com")
                 self.check_dns_update_needed()
                 self.process_domain_updates()
+                self.conn.close()
+                logger.info("Connection closed")
             logger.info(f"Sleeping for {self.update_interval} seconds")
             sleep(self.update_interval)
 
