@@ -19,15 +19,6 @@ class DNSUpdater:
         self.public_ip = None
         self.ip_changed = False
         self.update_domains = []
-        self.payload_template = """
-                                {{
-                                    "type": "A", 
-                                    "content": "{self.ip}",
-                                    "name": "{domain}",
-                                    "proxied": True,
-                                    "ttl": 300
-                                }}
-                                """
 
     def load_config(self, file):
         with open(file) as f:
@@ -53,10 +44,19 @@ class DNSUpdater:
                 "Authorization": f"Bearer {self.token}"
                 }
         return self._headers
+    def gen_payload(self, domain, proxy):
+        payload_dict = {
+            "type": "A",
+            "content": self.public_ip,
+            "name": domain,
+            "proxied": proxy,
+            "ttl": 300
+        }
+        return json.dumps(payload_dict)
 
-    def update_dns_record(self, domain, dns_id):
+    def update_dns_record(self, domain, dns_id, proxy):
         endpoint = f"/client/v4/zones/{self.zone_id}/dns_records/{dns_id}"
-        payload = self.payload_template.format(domain=domain, dns_id=dns_id)
+        payload = self.gen_payload(domain, proxy)
         conn.request("PUT", endpoint, payload, headers=self.headers)
 
         res = conn.getresponse()
@@ -69,9 +69,9 @@ class DNSUpdater:
         else:
             logger.info(f"Successfully updated DNS record for {domain}")
 
-    def create_dns_record(self, domain):
+    def create_dns_record(self, domain, proxy):
         endpoint = f"/client/v4/zones/{self.zone_id}/dns_records"
-        payload = self.payload_template.format(domain=domain, dns_id=dns_id)
+        payload = self.gen_payload(domain, proxy)
         self.conn.request("POST", endpoint, payload, headers=self.headers)
 
         res = self.conn.getresponse()
@@ -85,23 +85,28 @@ class DNSUpdater:
             logger.info(f"Successfully created DNS record for {domain}")
 
     def process_domain_updates(self):
-        for domain, dns_id in self.update_domains:
+        for domain, dns_id, proxy in self.update_domains:
             if dns_id:
                 logger.info(f"Updating DNS record for {domain}")
-                self.update_dns_record()
+                self.update_dns_record(domain, dns_id, proxy)
             else:
                 logger.info(f"Creating DNS record for {domain}")
-                self.create_dns_record(domain)
+                self.create_dns_record(domain, proxy)
 
-    def check_dns_update_needed(self):
-        for domain in self.domains:
+    def process_domain_list(self, domains, proxy):
+        for domain in domains:
             dns_record = self.get_dns_record(domain)
             if not dns_record:
-                self.update_domains.append((domain, None))
+                self.update_domains.append((domain, None, proxy))
             elif dns_record["content"] != self.public_ip:
-                self.update_domains.append((domain, dns_record["id"]))
+                self.update_domains.append((domain, dns_record["id"], proxy))
             else:
                 logger.info(f"Skipping update for {domain}")
+    
+
+    def check_dns_update_needed(self):
+        self.process_domain_list(self.domains, False)
+        self.process_domain_list(self.proxy_domains, True)
 
     def get_dns_record(self, domain):
         endpoint = f"/client/v4/zones/{self.zone_id}/dns_records?type=A&name={domain}"
@@ -109,8 +114,13 @@ class DNSUpdater:
         res = self.conn.getresponse()
         data = res.read()
 
-        record = json.loads(data.decode("utf-8"))["result"][0]
-        return record
+        
+        result = json.loads(data.decode("utf-8"))["result"]
+
+        if result:
+            return result[0]
+
+        return None
 
     def run(self):
         logger.info("Starting DNS update service")
