@@ -57,9 +57,9 @@ class DNSUpdater:
     def update_dns_record(self, domain, dns_id, proxy):
         endpoint = f"/client/v4/zones/{self.zone_id}/dns_records/{dns_id}"
         payload = self.gen_payload(domain, proxy)
-        conn.request("PUT", endpoint, payload, headers=self.headers)
+        self.conn.request("PUT", endpoint, payload, headers=self.headers)
 
-        res = conn.getresponse()
+        res = self.conn.getresponse()
         data = res.read()
 
         result = json.loads(data.decode("utf-8"))
