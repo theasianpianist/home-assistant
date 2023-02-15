@@ -1,6 +1,7 @@
 name: "Cloudflare Dynamic DNS"
 description: "Update dynamic DNS record hosted with Cloudflare"
-version: 1.1.1
+version: 1.2
+image: "theasianpianist/cloudflare_ddns"
 slug: "cloudflare_ddns"
 init: false
 arch:
