@@ -1,3 +1,6 @@
+## 1.2.0
+- Use prebuilt docker image
+
 ## 1.1.0
 - Support specifying proxied or not for each domain
 
