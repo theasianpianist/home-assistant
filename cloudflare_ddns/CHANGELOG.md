@@ -1,3 +1,9 @@
+### 1.2.2
+- Dummy change plus docker image
+
+### 1.2.1
+- Dummy change
+
 ## 1.2.0
 - Use prebuilt docker image
 
