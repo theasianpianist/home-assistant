@@ -1,5 +1,6 @@
 name: "Cloudflare Dynamic DNS"
 description: "Update dynamic DNS record hosted with Cloudflare"
+url: "https://github.com/theasianpianist/home-assistant/tree/main/cloudflare_ddns"
 version: 1.2
 image: "theasianpianist/cloudflare_ddns"
 slug: "cloudflare_ddns"
